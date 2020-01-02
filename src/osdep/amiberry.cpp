@@ -331,6 +331,7 @@ void fix_apmodes(struct uae_prefs* p)
 		p->gfx_apmode[0].gfx_refreshrate = 50;
 		p->gfx_apmode[1].gfx_refreshrate = 50;
 	}
+	write_log("nuumio: fix_apmodes, p->gfx_apmode[n].gfx_refreshrate = %d", p->gfx_apmode[0].gfx_refreshrate);
 
 	fixup_prefs_dimensions(p);
 }
@@ -974,6 +975,15 @@ void load_amiberry_settings(void)
 	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
 	snprintf(path, MAX_DPATH, "%s/conf/amiberry.conf", start_path_data);
 
+	write_log(_T("nuumio: load_amiberry_settings enter default config_path: %s\n"), config_path);
+	write_log(_T("nuumio: load_amiberry_settings enter default controllers_path: %s\n"), controllers_path);
+	write_log(_T("nuumio: load_amiberry_settings enter default retroarch_file: %s\n"), retroarch_file);
+	write_log(_T("nuumio: load_amiberry_settings enter default rom_path: %s\n"), rom_path);
+	write_log(_T("nuumio: load_amiberry_settings enter default rp9_path: %s\n"), rp9_path);
+	write_log(_T("nuumio: load_amiberry_settings enter default (amiberry.conf) path: %s\n"), path);
+
+	write_log(_T("nuumio: load_amiberry_settings from: %s\n"), path);
+
 	const auto fh = zfile_fopen(path, _T("r"), ZFD_NORMAL);
 	if (fh)
 	{
@@ -1059,6 +1069,13 @@ void load_amiberry_settings(void)
 		}
 		zfile_fclose(fh);
 	}
+
+	write_log(_T("nuumio: load_amiberry_settings exit config_path: %s\n"), config_path);
+	write_log(_T("nuumio: load_amiberry_settings exit controllers_path: %s\n"), controllers_path);
+	write_log(_T("nuumio: load_amiberry_settings exit retroarch_file: %s\n"), retroarch_file);
+	write_log(_T("nuumio: load_amiberry_settings exit rom_path: %s\n"), rom_path);
+	write_log(_T("nuumio: load_amiberry_settings exit rp9_path: %s\n"), rp9_path);
+	write_log(_T("nuumio: load_amiberry_settings exit (amiberry.conf) path: %s\n"), path);
 }
 
 void rename_old_adfdir()

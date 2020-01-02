@@ -692,14 +692,14 @@ static void update_drive_gui (int num, bool force)
 
 static void drive_fill_bigbuf (drive *drv, int);
 
-int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname_in, TCHAR *outfname, int leave_open, bool *wrprot, uae_u32 *crc32, struct zfile **zf)
+int DISK_validate_filename(struct uae_prefs *p, const TCHAR *fname_in, TCHAR *outfname, int leave_open, bool *wrprot, uae_u32 *crc32, struct zfile **zf)
 {
 	TCHAR outname[MAX_DPATH];
 
 	if (zf)
 		*zf = NULL;
-  if (crc32)
-  	*crc32 = 0;
+	if (crc32)
+		*crc32 = 0;
 	if (wrprot)
 		*wrprot = p->floppy_read_only ? 1 : 0;
 
@@ -707,37 +707,45 @@ int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname_in, TCHAR *o
 	if (outfname)
 		_tcscpy(outfname, outname);
 
-  if (leave_open || !zf) {
-    struct zfile *f = zfile_fopen (outname, _T("r+b"), ZFD_NORMAL | ZFD_DISKHISTORY);
-		if (!f) {
-    	if (wrprot)
-  	    *wrprot = 1;
-    	f = zfile_fopen (outname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
-    }
-	  if (f && crc32)
-	    *crc32 = zfile_crc32 (f);
+	if (leave_open || !zf)
+	{
+		struct zfile *f = zfile_fopen(outname, _T("r+b"), ZFD_NORMAL | ZFD_DISKHISTORY);
+		if (!f)
+		{
+			if (wrprot)
+				*wrprot = 1;
+			f = zfile_fopen(outname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
+		}
+		if (f && crc32)
+			*crc32 = zfile_crc32(f);
 		if (!zf)
-			zfile_fclose (f);
+			zfile_fclose(f);
 		else
 			*zf = f;
 		return f ? 1 : 0;
-  } else {
-	  if (zfile_exists (outname)) {
+	}
+	else
+	{
+		if (zfile_exists(outname))
+		{
 			if (wrprot && !p->floppy_read_only)
-		    *wrprot = 0;
-	    if (crc32) {
-		    struct zfile *f = zfile_fopen (outname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
-		    if (f)
-		      *crc32 = zfile_crc32 (f);
-	      zfile_fclose (f);
-	    }
+				*wrprot = 0;
+			if (crc32)
+			{
+				struct zfile *f = zfile_fopen(outname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
+				if (f)
+					*crc32 = zfile_crc32(f);
+				zfile_fclose(f);
+			}
 			return 1;
-	  } else {
-	    if (wrprot)
-		    *wrprot = 1;
-	    return 0;
-	  }
-  }
+		}
+		else
+		{
+			if (wrprot)
+				*wrprot = 1;
+			return 0;
+		}
+	}
 }
 
 static void updatemfmpos (drive *drv)
@@ -902,13 +910,19 @@ static struct zfile *getexistingwritefile(struct uae_prefs *p, const TCHAR *name
 	TCHAR *path;
 	TCHAR outname[MAX_DPATH];
 
+  write_log(_T("nuumio: getexistingwritefile enter, name: %s\n"), name);
+
 	path = DISK_get_saveimagepath(name, 0);
+	write_log(_T("nuumio: getexistingwritefile DISK_get_saveimagepath 0 gave: %s\n"), path);
 	DISK_validate_filename (p, path, outname, 1, wrprot, NULL, &zf);
 	xfree(path);
+	write_log(_T("nuumio: getexistingwritefile DISK_validate_filename gave: %p\n"), zf);
 	if (zf)
 		return zf;
 	path = DISK_get_saveimagepath(name, 1);
+	write_log(_T("nuumio: getexistingwritefile DISK_get_saveimagepath 1 gave: %s\n"), path);
 	DISK_validate_filename (p, path, outname, 1, wrprot, NULL, &zf);
+	write_log(_T("nuumio: getexistingwritefile DISK_validate_filename gave: %p\n"), zf);
 	xfree(path);
 	return zf;
 }
@@ -921,22 +935,30 @@ static int iswritefileempty (struct uae_prefs *p, const TCHAR *name)
   trackid td[MAX_TRACKS];
   int tracks, ddhd, i, ret;
 
+  write_log(_T("nuumio: iswritefileempty enter, name: %s\n"), name);
 	zf = getexistingwritefile (p, name, &wrprot);
+  write_log(_T("nuumio: iswritefileempty getexistingwritefile gave: %p\n"), zf);
   if (!zf) 
     return 1;
   zfile_fread (buffer, sizeof (char), 8, zf);
   if (strncmp ((uae_char*)buffer, "UAE-1ADF", 8)) {
     zfile_fclose(zf);
+	write_log(_T("nuumio: iswritefileempty matched UAE-1ADF, not empty\n"));
   	return 0;
   }
   ret = read_header_ext2 (zf, td, &tracks, &ddhd);
   zfile_fclose (zf);
-  if (!ret)
+  if (!ret) {
+	  write_log(_T("nuumio: iswritefileempty read_header_ext2 failed, IS EMPTY\n"));
   	return 1;
-  for (i = 0; i < tracks; i++) {
-  	if (td[i].bitlen) 
-  	  return 0;
   }
+  for (i = 0; i < tracks; i++) {
+  	if (td[i].bitlen) {
+	  write_log(_T("nuumio: iswritefileempty got track bitlen, not empty\n"));
+  	  return 0;
+	}
+  }
+  write_log(_T("nuumio: iswritefileempty return default, IS EMPTY\n"));
   return 1;
 }
 
@@ -2496,54 +2518,73 @@ void DISK_reinsert (int num)
 	setdskchangetime (&floppy[num], 2 * 50 * 312);
 }
 
-int disk_setwriteprotect (struct uae_prefs *p, int num, const TCHAR *fname_in, bool writeprotected)
+int disk_setwriteprotect(struct uae_prefs *p, int num, const TCHAR *fname_in, bool writeprotected)
 {
-  int needwritefile, oldprotect;
-  struct zfile *zf1, *zf2;
-  bool wrprot1, wrprot2;
-  int i;
-  TCHAR *name2;
-  drive_type drvtype;
+	int needwritefile, oldprotect;
+	struct zfile *zf1, *zf2;
+	bool wrprot1, wrprot2;
+	int i;
+	TCHAR *name2;
+	drive_type drvtype;
 	TCHAR outfname[MAX_DPATH];
 
 	write_log(_T("disk_setwriteprotect %d '%s' %d\n"), num, fname_in, writeprotected);
 
-	oldprotect = diskfile_iswriteprotect (p, fname_in, &needwritefile, &drvtype);
-	DISK_validate_filename (p, fname_in, outfname, 1, &wrprot1, NULL, &zf1);
-  if (!zf1) 
-    return 0;
-
-	write_log(_T("old = %d writeprot = %d master = %d\n"), oldprotect, wrprot1, p->floppy_read_only);
-
-	if (wrprot1 && p->floppy_read_only) {
-		zfile_fclose(zf1);
+	oldprotect = diskfile_iswriteprotect(p, fname_in, &needwritefile, &drvtype);
+	DISK_validate_filename(p, fname_in, outfname, 1, &wrprot1, NULL, &zf1);
+	if (!zf1) {
+		write_log(_T("nuumio: disk_setwriteprotect exiting not valid file?, %d '%s' %d\n"), num, fname_in, writeprotected);
 		return 0;
 	}
-  if (zfile_iscompressed (zf1)) 
-    wrprot1 = 1;
-  zfile_fclose (zf1);
+
+	write_log(_T("old = %d writeprot = %d master = %d\n"), oldprotect, wrprot1, p->floppy_read_only);
+	write_log(_T("nuumio: disk_setwriteprotect: needwritefile = %s\n"), needwritefile ? "true" : "false");
+
+	if (wrprot1 && p->floppy_read_only)
+	{
+		zfile_fclose(zf1);
+		write_log(_T("nuumio: disk_setwriteprotect: already protected? -> do nothing\n"));
+		write_log(_T("nuumio: disk_setwriteprotect exiting do nothing?, %d '%s' %d\n"), num, fname_in, writeprotected);
+		return 0;
+	}
+	if (zfile_iscompressed(zf1)) {
+		wrprot1 = 1;
+		write_log(_T("nuumio: disk_setwriteprotect: zfile_iscompressed = true\n"));
+	}
+	zfile_fclose(zf1);
 	zf2 = getexistingwritefile(p, fname_in, &wrprot2);
+	write_log(_T("nuumio: disk_setwriteprotect: getexistingwritefile = %p\n"), zf2);
 	name2 = DISK_get_saveimagepath(fname_in, -2);
+	write_log(_T("nuumio: disk_setwriteprotect: name2 = %s\n"), name2 != NULL ? name2 : "<null>");
 
-  if (needwritefile && zf2 == NULL)
-		disk_creatediskfile (p, name2, 1, drvtype, -1, NULL, false, false, NULL);
-  zfile_fclose (zf2);
-	if (writeprotected && iswritefileempty (p, fname_in)) {
-  	for (i = 0; i < MAX_FLOPPY_DRIVES; i++) {
-			if (!_tcscmp (fname_in, floppy[i].newname))
-    		drive_eject (&floppy[i]);
-  	}
-  	_wunlink (name2);
-  }
+	if (needwritefile && zf2 == NULL) {
+		write_log(_T("nuumio: disk_setwriteprotect: calling disk_creatediskfile , name2 = %s\n"), name2 != NULL ? name2 : "<null>");
+		disk_creatediskfile(p, name2, 1, drvtype, -1, NULL, false, false, NULL);
+	}
+	zfile_fclose(zf2);
+	if (writeprotected && iswritefileempty(p, fname_in))
+	{
+		write_log(_T("nuumio: disk_setwriteprotect: write protecting empty file %s\n"), fname_in);
+		for (i = 0; i < MAX_FLOPPY_DRIVES; i++)
+		{
+			if (!_tcscmp(fname_in, floppy[i].newname)) {
+				drive_eject(&floppy[i]);
+				write_log(_T("nuumio: disk_setwriteprotect: eject drive %d\n"), i);
+			}
+		}
+		write_log(_T("nuumio: disk_setwriteprotect: _wunlink %s\n"), name2 != NULL ? name2 : "<null>");
+		_wunlink(name2);
+	}
 
-  if (!needwritefile)
-		diskfile_readonly (outfname, writeprotected);
-  diskfile_readonly (name2, writeprotected);
+	if (!needwritefile)
+		diskfile_readonly(outfname, writeprotected);
+	diskfile_readonly(name2, writeprotected);
 
 	floppy[num].forcedwrprot = false;
 	floppy[num].newnamewriteprotected = false;
 
-  return 1;
+	write_log(_T("nuumio: disk_setwriteprotect exiting ok, %d '%s' %d\n"), num, fname_in, writeprotected);
+	return 1;
 }
 
 void disk_eject (int num)

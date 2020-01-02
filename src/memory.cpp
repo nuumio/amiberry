@@ -781,19 +781,24 @@ static struct zfile *get_kickstart_filehandle(struct uae_prefs *p)
 	struct zfile *f;
 	TCHAR tmprom[MAX_DPATH], tmprom2[MAX_DPATH];
 
+	write_log(_T("nuumio: get_kickstart_filehandle 1 %s\n"), p->romfile);
 	f = read_rom_name(p->romfile);
 	_tcscpy(tmprom, p->romfile);
 	_tcscpy(tmprom2, p->romfile);
   if (f == NULL) {
 		_stprintf(tmprom2, _T("%s%s"), start_path_data, p->romfile);
+		write_log(_T("nuumio: get_kickstart_filehandle 2 %s\n"), tmprom2);
 		f = rom_fopen(tmprom2, _T("rb"), ZFD_NORMAL);
   	if (f == NULL) {
 	    _stprintf (tmprom2, _T("%sroms/kick.rom"), start_path_data);
+		write_log(_T("nuumio: get_kickstart_filehandle 3 %s\n"), tmprom2);
     	f = rom_fopen (tmprom2, _T("rb"), ZFD_NORMAL);
     	if (f == NULL) {
     		_stprintf (tmprom2, _T("%skick.rom"), start_path_data);
+			write_log(_T("nuumio: get_kickstart_filehandle 4 %s\n"), tmprom2);
 	      f = rom_fopen(tmprom2, _T("rb"), ZFD_NORMAL);
 				if (f == NULL) {
+					write_log(_T("nuumio: get_kickstart_filehandle 5 guessing it\n"));
 					f = read_rom_name_guess (tmprom, tmprom2);
 			}
 		}
@@ -801,6 +806,9 @@ static struct zfile *get_kickstart_filehandle(struct uae_prefs *p)
 	}
 	if (f) {
     _tcscpy (p->romfile, tmprom2);
+	write_log(_T("nuumio: get_kickstart_filehandle kickstart file is %s\n"), p->romfile);
+  } else {
+	  write_log(_T("nuumio: get_kickstart_filehandle NO KICKSTART\n"));
   }
 	return f;
 }

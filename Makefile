@@ -438,10 +438,14 @@ OBJS += src/newcpu.o \
 DEPS = $(OBJS:%.o=%.d) $(C_OBJS:%.o=%.d)
 
 $(PROG): $(OBJS) $(C_OBJS)
+	echo "DISPMANX_FLAGS=$(DISPMANX_FLAGS)"
+	echo "DISPMANX_LDFLAGS=$(DISPMANX_LDFLAGS)"
+	echo "SDL2_CONFIG=$(SDL2_CONFIG)"
+	echo "XML2_CONFIG=$(XML2_CONFIG)"
 	$(CXX) -o $(PROG) $(OBJS) $(C_OBJS) $(LDFLAGS)
 ifndef DEBUG
 # want to keep a copy of the binary before stripping? Then enable the below line
-#	cp $(PROG) $(PROG)-debug
+	cp $(PROG) $(PROG)-debug
 	$(STRIP) $(PROG)
 endif
 

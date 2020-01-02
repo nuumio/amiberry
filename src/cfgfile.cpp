@@ -5085,6 +5085,7 @@ static int cfgfile_load_2(struct uae_prefs* p, const TCHAR* filename, bool real,
 	if (type)
 	{
 		askedtype = *type;
+		write_log(_T("nuumio: cfgfile_load_2 set askedtype: %d\n"), askedtype);
 		*type = 0;
 	}
 	if (real)
@@ -5094,9 +5095,11 @@ static int cfgfile_load_2(struct uae_prefs* p, const TCHAR* filename, bool real,
 		//reset_inputdevice_config (p);
 	}
 
+	write_log(_T("nuumio: cfgfile_load_2 opening: %s\n"), filename);
 	fh = zfile_fopen(filename, _T("r"), ZFD_NORMAL);
 	if (! fh)
 		return 0;
+	write_log(_T("nuumio: cfgfile_load_2 opened: %s\n"), filename);
 
 	while (cfg_fgets(linea, sizeof (linea), fh) != nullptr)
 	{
@@ -5121,10 +5124,14 @@ static int cfgfile_load_2(struct uae_prefs* p, const TCHAR* filename, bool real,
 			if (cfgfile_yesno(line1b, line2b, _T("config_hardware"), &type1) ||
 				cfgfile_yesno(line1b, line2b, _T("config_host"), &type2))
 			{
-				if (type1 && type)
+				if (type1 && type) {
 					*type |= CONFIG_TYPE_HARDWARE;
-				if (type2 && type)
+					write_log(_T("nuumio: cfgfile_load_2 set type CONFIG_TYPE_HARDWARE: %d\n"), *type);
+				}
+				if (type2 && type) {
 					*type |= CONFIG_TYPE_HOST;
+					write_log(_T("nuumio: cfgfile_load_2 set type CONFIG_TYPE_HOST: %d\n"), *type);
+				}
 				continue;
 			}
 			if (real)

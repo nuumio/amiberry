@@ -136,6 +136,7 @@ public:
 					//---------------------------------------
 					// Write-protect changed
 					//---------------------------------------
+					write_log(_T("nuumio: disk_setwriteprotect on %s\n"), changed_prefs.floppyslots[i].df);
 					disk_setwriteprotect(&changed_prefs, i, changed_prefs.floppyslots[i].df,
 					                     chkDFxWriteProtect[i]->isSelected());
 					if (disk_getwriteprotect(&changed_prefs, changed_prefs.floppyslots[i].df) != chkDFxWriteProtect[i]->

@@ -440,8 +440,14 @@ int gui_update()
 {
 	char tmp[MAX_DPATH];
 
+	write_log(_T("nuumio: gui_update enter savestate_fname is %s\n"), savestate_fname);
+	write_log(_T("nuumio: gui_update enter screenshot_filename is %s\n"), screenshot_filename);
+
 	fetch_savestatepath(savestate_fname, MAX_DPATH - 1);
 	fetch_screenshotpath(screenshot_filename, MAX_DPATH - 1);
+
+	write_log(_T("nuumio: gui_update fetched savestate_fname is %s\n"), savestate_fname);
+	write_log(_T("nuumio: gui_update fetched screenshot_filename is %s\n"), screenshot_filename);
 
 	if (strlen(currprefs.floppyslots[0].df) > 0)
 		extractFileName(currprefs.floppyslots[0].df, tmp);
@@ -471,6 +477,8 @@ int gui_update()
 	   	strncat(savestate_fname,".uss", MAX_DPATH - 1);
   		strncat(screenshot_filename,".png", MAX_DPATH - 1);
   }
+  write_log(_T("nuumio: gui_update exit savestate_fname set to %s\n"), savestate_fname);
+  write_log(_T("nuumio: gui_update exit screenshot_filename set to %s\n"), screenshot_filename);
   return 0;
 }
 

@@ -73,6 +73,7 @@ UAE_DLHANDLE uae_dlopen_plugin(const TCHAR *name)
 	}
 */
 	UAE_DLHANDLE handle = uae_dlopen(LIBCAPSIMAGE_DLOPEN_PATH);
+	write_log(_T("nuumio: uae_dlopen_plugin 'force loading' %s\n"), LIBCAPSIMAGE_DLOPEN_PATH);
 #elif defined(WINUAE)
 	TCHAR path[MAX_DPATH];
 	_tcscpy(path, name);

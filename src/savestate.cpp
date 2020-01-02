@@ -490,6 +490,7 @@ void restore_state (const TCHAR *filename)
   size_t filepos, filesize;
 	int z3num, z2num;
 
+	write_log (_T("nuumio: restore_state: trying to restore '%s'\n"), filename);
   chunk = 0;
 	f = zfile_fopen (filename, _T("rb"), ZFD_NORMAL);
   if (!f)
@@ -669,6 +670,7 @@ void restore_state (const TCHAR *filename)
   return;
 
 error:
+write_log (_T("nuumio: restore_state: error in restoring '%s'\n"), filename);
   savestate_state = 0;
   savestate_file = 0;
   if (chunk)
@@ -941,6 +943,7 @@ int save_state (const TCHAR *filename, const TCHAR *description)
 {
 	struct zfile *f;
 
+  write_log (_T("nuumio: save_state: trying to save '%s'\n"), filename);
   state_incompatible_warn();
   if (!save_filesys_cando()) {
 		gui_message (_T("Filesystem active. Try again later."));
@@ -948,11 +951,16 @@ int save_state (const TCHAR *filename, const TCHAR *description)
 	}
   custom_prepare_savestate ();
 	f = zfile_fopen (filename, _T("w+b"), 0);
-  if (!f)
+  if (!f) {
+	write_log (_T("nuumio: save_state: zfile_fopen '%s' w+b failed\n"), filename);
   	return 0;
+  }
 	int v = save_state_internal (f, description, false, true);
-	if (v)
-    write_log (_T("Save of '%s' complete\n"), filename);
+	if (v){
+    	write_log (_T("Save of '%s' complete\n"), filename);
+	}else{
+		write_log (_T("nuumio: save_state: save_state_internal '%s' w+b failed\n"), filename);
+	}
   zfile_fclose (f);
   savestate_state = 0;
 	return v;

@@ -389,6 +389,7 @@ int graphics_setup(void)
 		write_log("SDL could not grab the keyboard");
 	
 	currprefs.gfx_apmode[1].gfx_refreshrate = host_hz;
+	write_log("nuumio: graphics_setup, currprefs.gfx_apmode[1].gfx_refreshrate = %d", host_hz);
 
 #ifdef USE_DISPMANX
 	if (display_pipe == nullptr) {
@@ -1191,6 +1192,8 @@ bool vsync_switchmode(int hz)
 		hz = 60;
 	else
 		hz = 50;
+
+	write_log (_T("nuumio: vsync_switchmode enter, hz=%d, currVSyncRate=%d\n"), hz, currVSyncRate);
 
 	if (hz == 50 && currVSyncRate == 60)
 	{
