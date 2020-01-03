@@ -46,47 +46,47 @@ void target_startup_msg(const TCHAR* title, const TCHAR* msg)
 
 ConfigCategory categories[] = {
 	{
-		"About", "data/amigainfo.ico", nullptr, nullptr, InitPanelAbout, ExitPanelAbout, RefreshPanelAbout,
+		"About", RESOURCE_DIR "amigainfo.ico", nullptr, nullptr, InitPanelAbout, ExitPanelAbout, RefreshPanelAbout,
 		HelpPanelAbout
 	},
-	{"Paths", "data/paths.ico", nullptr, nullptr, InitPanelPaths, ExitPanelPaths, RefreshPanelPaths, HelpPanelPaths},
+	{"Paths", RESOURCE_DIR "paths.ico", nullptr, nullptr, InitPanelPaths, ExitPanelPaths, RefreshPanelPaths, HelpPanelPaths},
 	{
-		"Quickstart", "data/quickstart.ico", nullptr, nullptr, InitPanelQuickstart, ExitPanelQuickstart,
+		"Quickstart", RESOURCE_DIR "quickstart.ico", nullptr, nullptr, InitPanelQuickstart, ExitPanelQuickstart,
 		RefreshPanelQuickstart, HelpPanelQuickstart
 	},
 	{
-		"Configurations", "data/file.ico", nullptr, nullptr, InitPanelConfig, ExitPanelConfig, RefreshPanelConfig,
+		"Configurations", RESOURCE_DIR "file.ico", nullptr, nullptr, InitPanelConfig, ExitPanelConfig, RefreshPanelConfig,
 		HelpPanelConfig
 	},
-	{"CPU and FPU", "data/cpu.ico", nullptr, nullptr, InitPanelCPU, ExitPanelCPU, RefreshPanelCPU, HelpPanelCPU},
+	{"CPU and FPU", RESOURCE_DIR "cpu.ico", nullptr, nullptr, InitPanelCPU, ExitPanelCPU, RefreshPanelCPU, HelpPanelCPU},
 	{
-		"Chipset", "data/cpu.ico", nullptr, nullptr, InitPanelChipset, ExitPanelChipset, RefreshPanelChipset,
+		"Chipset", RESOURCE_DIR "cpu.ico", nullptr, nullptr, InitPanelChipset, ExitPanelChipset, RefreshPanelChipset,
 		HelpPanelChipset
 	},
-	{"ROM", "data/chip.ico", nullptr, nullptr, InitPanelROM, ExitPanelROM, RefreshPanelROM, HelpPanelROM},
-	{"RAM", "data/chip.ico", nullptr, nullptr, InitPanelRAM, ExitPanelRAM, RefreshPanelRAM, HelpPanelRAM},
+	{"ROM", RESOURCE_DIR "chip.ico", nullptr, nullptr, InitPanelROM, ExitPanelROM, RefreshPanelROM, HelpPanelROM},
+	{"RAM", RESOURCE_DIR "chip.ico", nullptr, nullptr, InitPanelRAM, ExitPanelRAM, RefreshPanelRAM, HelpPanelRAM},
 	{
-		"Floppy drives", "data/35floppy.ico", nullptr, nullptr, InitPanelFloppy, ExitPanelFloppy, RefreshPanelFloppy,
+		"Floppy drives", RESOURCE_DIR "35floppy.ico", nullptr, nullptr, InitPanelFloppy, ExitPanelFloppy, RefreshPanelFloppy,
 		HelpPanelFloppy
 	},
-	{"Hard drives/CD", "data/drive.ico", nullptr, nullptr, InitPanelHD, ExitPanelHD, RefreshPanelHD, HelpPanelHD},
+	{"Hard drives/CD", RESOURCE_DIR "drive.ico", nullptr, nullptr, InitPanelHD, ExitPanelHD, RefreshPanelHD, HelpPanelHD},
 	{
-		"Display", "data/screen.ico", nullptr, nullptr, InitPanelDisplay, ExitPanelDisplay, RefreshPanelDisplay,
+		"Display", RESOURCE_DIR "screen.ico", nullptr, nullptr, InitPanelDisplay, ExitPanelDisplay, RefreshPanelDisplay,
 		HelpPanelDisplay
 	},
-	{"Sound", "data/sound.ico", nullptr, nullptr, InitPanelSound, ExitPanelSound, RefreshPanelSound, HelpPanelSound},
-	{"Input", "data/joystick.ico", nullptr, nullptr, InitPanelInput, ExitPanelInput, RefreshPanelInput, HelpPanelInput},
+	{"Sound", RESOURCE_DIR "sound.ico", nullptr, nullptr, InitPanelSound, ExitPanelSound, RefreshPanelSound, HelpPanelSound},
+	{"Input", RESOURCE_DIR "joystick.ico", nullptr, nullptr, InitPanelInput, ExitPanelInput, RefreshPanelInput, HelpPanelInput},
 	{
-		"Custom controls", "data/controller.png", nullptr, nullptr, InitPanelCustom, ExitPanelCustom,
+		"Custom controls", RESOURCE_DIR "controller.png", nullptr, nullptr, InitPanelCustom, ExitPanelCustom,
 		RefreshPanelCustom, HelpPanelCustom
 	},
-	{"Miscellaneous", "data/misc.ico", nullptr, nullptr, InitPanelMisc, ExitPanelMisc, RefreshPanelMisc, HelpPanelMisc},
+	{"Miscellaneous", RESOURCE_DIR "misc.ico", nullptr, nullptr, InitPanelMisc, ExitPanelMisc, RefreshPanelMisc, HelpPanelMisc},
 	{
-		"Savestates", "data/savestate.png", nullptr, nullptr, InitPanelSavestate, ExitPanelSavestate,
+		"Savestates", RESOURCE_DIR "savestate.png", nullptr, nullptr, InitPanelSavestate, ExitPanelSavestate,
 		RefreshPanelSavestate, HelpPanelSavestate
 	},
 #ifdef ANDROID
-	{ "OnScreen",         "data/screen.ico",    NULL, NULL, InitPanelOnScreen,  ExitPanelOnScreen, RefreshPanelOnScreen,  HelpPanelOnScreen },
+	{ "OnScreen",         RESOURCE_DIR "screen.ico",    NULL, NULL, InitPanelOnScreen,  ExitPanelOnScreen, RefreshPanelOnScreen,  HelpPanelOnScreen },
 #endif
 	{nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr}
 };
@@ -243,7 +243,7 @@ static void ShowHelpRequested()
 static SDL_Rect dst;
 void swcursor(bool op) {
 	if (!op) {
-		cursor_surface = SDL_LoadBMP("data/cursor.bmp");
+		cursor_surface = SDL_LoadBMP(RESOURCE_DIR "cursor.bmp");
 		swcursor_texture = SDL_CreateTextureFromSurface(renderer, cursor_surface);
 		// Hide real cursor
 		SDL_SetCursor(SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW));
@@ -288,11 +288,11 @@ void setup_cursor()
 	// Detect resolution and load appropriate cursor image
 	if (strcmp(sdl_video_driver, "x11") != 0 && sdlMode.w > 1280)
 	{
-		cursor_surface = SDL_LoadBMP("data/cursor-x2.bmp");
+		cursor_surface = SDL_LoadBMP(RESOURCE_DIR "cursor-x2.bmp");
 	}
 	else
 	{
-		cursor_surface = SDL_LoadBMP("data/cursor.bmp");
+		cursor_surface = SDL_LoadBMP(RESOURCE_DIR "cursor.bmp");
 	}
 
 	if (!cursor_surface)
@@ -959,16 +959,16 @@ void gui_widgets_init()
 
 	try
 	{
-		gui_font = new gcn::SDLTrueTypeFont("data/AmigaTopaz.ttf", 15);
+		gui_font = new gcn::SDLTrueTypeFont(RESOURCE_DIR "AmigaTopaz.ttf", 15);
 	}
 	catch (const std::exception& ex)
 	{
-		write_log("Could not open data/AmigaTopaz.ttf!\n");
+		write_log("Could not open " RESOURCE_DIR "AmigaTopaz.ttf!\n");
 		abort();
 	}
 	catch (...)
 	{
-		write_log("An error occurred while trying to open data/AmigaTopaz.ttf!\n");
+		write_log("An error occurred while trying to open " RESOURCE_DIR "AmigaTopaz.ttf!\n");
 		abort();
 	}
 

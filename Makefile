@@ -181,6 +181,7 @@ PROG   = amiberry
 #
 # SDL2 options
 #
+# SDL2_CONFIG: sdl2-config program to run for CFLAGS ans LDFLAGS
 SDL2_CONFIG ?= sdl2-config
 all: guisan $(PROG)
 export SDL_CFLAGS := $(shell $(SDL2_CONFIG) --cflags)
@@ -192,8 +193,13 @@ LDFLAGS += $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/
 #
 # Common options
 #
+# RESOURCE_DIR: Path to resource directory (icons, images)
+# LIBCAPSIMAGE_DLOPEN_PATH: Path to libcapsimage for dlopen (dlopen.cpp)
+# XML2_CONFIG: xml2-config program to run for CFLAGS
+RESOURCE_DIR ?= data/
+LIBCAPSIMAGE_DLOPEN_PATH ?= ./capsimg.so
 XML2_CONFIG ?= xml2-config
-DEFS = $(XML_CFLAGS) -DAMIBERRY
+DEFS = $(XML_CFLAGS) -DAMIBERRY -DRESOURCE_DIR='"$(RESOURCE_DIR)"' -DLIBCAPSIMAGE_DLOPEN_PATH='"$(LIBCAPSIMAGE_DLOPEN_PATH)"'
 CPPFLAGS += -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers $(DEFS)
 XML_CFLAGS := $(shell $(XML2_CONFIG) --cflags )
 LDFLAGS += -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed

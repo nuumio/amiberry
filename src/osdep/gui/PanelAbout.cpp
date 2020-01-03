@@ -15,7 +15,7 @@ static gcn::ScrollArea* textBoxScrollArea;
 
 void InitPanelAbout(const struct _ConfigCategory& category)
 {
-	amiberryLogoImage = gcn::Image::load("data/amiberry-logo.png");
+	amiberryLogoImage = gcn::Image::load(RESOURCE_DIR "amiberry-logo.png");
 	icon = new gcn::Icon(amiberryLogoImage);
 	lblEmulatorVersion = new gcn::Label(get_version_string());
 

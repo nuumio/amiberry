@@ -72,7 +72,7 @@ UAE_DLHANDLE uae_dlopen_plugin(const TCHAR *name)
 		return NULL;
 	}
 */
-	UAE_DLHANDLE handle = uae_dlopen("./capsimg.so");
+	UAE_DLHANDLE handle = uae_dlopen(LIBCAPSIMAGE_DLOPEN_PATH);
 #elif defined(WINUAE)
 	TCHAR path[MAX_DPATH];
 	_tcscpy(path, name);
