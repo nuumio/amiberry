@@ -24,8 +24,8 @@ endif
 #
 # DispmanX Common flags (RPI-specific)
 #
-DISPMANX_FLAGS = -DUSE_DISPMANX -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads 
-DISPMANX_LDFLAGS = -lbcm_host -lvchiq_arm -L/opt/vc/lib -Wl,-rpath=/opt/vc/lib
+DISPMANX_FLAGS ?= -DUSE_DISPMANX -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads 
+DISPMANX_LDFLAGS ?= -lbcm_host -lvchiq_arm -L/opt/vc/lib -Wl,-rpath=/opt/vc/lib
 CPPFLAGS=-MD -MT $@ -MF $(@:%.o=%.d)
 #DEBUG=1
 #GCC_PROFILE=1
@@ -181,9 +181,10 @@ PROG   = amiberry
 #
 # SDL2 options
 #
+SDL2_CONFIG ?= sdl2-config
 all: guisan $(PROG)
-export SDL_CFLAGS := $(shell sdl2-config --cflags)
-export SDL_LDFLAGS := $(shell sdl2-config --libs)
+export SDL_CFLAGS := $(shell $(SDL2_CONFIG) --cflags)
+export SDL_LDFLAGS := $(shell $(SDL2_CONFIG) --libs)
 
 CPPFLAGS += $(SDL_CFLAGS) -Iexternal/libguisan/include
 LDFLAGS += $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/lib
@@ -191,9 +192,10 @@ LDFLAGS += $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/
 #
 # Common options
 #
+XML2_CONFIG ?= xml2-config
 DEFS = $(XML_CFLAGS) -DAMIBERRY
 CPPFLAGS += -Isrc -Isrc/osdep -Isrc/threaddep -Isrc/include -Isrc/archivers $(DEFS)
-XML_CFLAGS := $(shell xml2-config --cflags )
+XML_CFLAGS := $(shell $(XML2_CONFIG) --cflags )
 LDFLAGS += -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed
 
 ifndef DEBUG
