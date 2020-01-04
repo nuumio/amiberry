@@ -60,7 +60,8 @@ else ifeq ($(PLATFORM),$(filter $(PLATFORM),rpi1-sdl2 rpi2-sdl2 rpi3-sdl2 rpi4-s
 # OrangePi (SDL2)
 else ifeq ($(PLATFORM),orangepi-pc)
     CPUFLAGS = -mcpu=cortex-a7 -mfpu=neon-vfpv4
-    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DUSE_RENDER_THREAD
+    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR
+    USE_RENDER_THREAD ?= 1
     HAVE_NEON = 1
     ifdef DEBUG
 	    # Otherwise we'll get compilation errors, check https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here
@@ -71,7 +72,8 @@ else ifeq ($(PLATFORM),orangepi-pc)
 # Odroid XU4 (SDL2)
 else ifeq ($(PLATFORM),xu4)
     CPUFLAGS += -mcpu=cortex-a15 -mfpu=neon-vfpv4
-    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DUSE_RENDER_THREAD -DFASTERCYCLES
+    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DFASTERCYCLES
+    USE_RENDER_THREAD ?= 1
     HAVE_NEON = 1
     ifdef DEBUG
 	    # Otherwise we'll get compilation errors, check https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here
@@ -82,7 +84,8 @@ else ifeq ($(PLATFORM),xu4)
 # Odroid C1 (SDL2)
 else ifeq ($(PLATFORM),c1)
     CPUFLAGS += -mcpu=cortex-a5 -mfpu=neon-vfpv4
-    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DUSE_RENDER_THREAD -DFASTERCYCLES
+    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DFASTERCYCLES
+    USE_RENDER_THREAD ?= 1
     HAVE_NEON = 1
     ifdef DEBUG
 	    # Otherwise we'll get compilation errors, check https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here
@@ -113,7 +116,8 @@ else ifeq ($(PLATFORM),pi64-dispmanx)
 else ifeq ($(PLATFORM),vero4k)
     CPUFLAGS = -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
     CFLAGS += -ftree-vectorize -funsafe-math-optimizations
-    CPPFLAGS += -I/opt/vero3/include -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DUSE_RENDER_THREAD -DFASTERCYCLES
+    CPPFLAGS += -I/opt/vero3/include -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DFASTERCYCLES
+    USE_RENDER_THREAD ?= 1
     LDFLAGS += -L/opt/vero3/lib
     HAVE_NEON = 1
 
@@ -131,7 +135,7 @@ else ifneq (,$(findstring AMLG,$(PLATFORM)))
       endif
     else ifneq (,$(findstring AMLGX,$(PLATFORM)))
       CPUFLAGS += -mcpu=cortex-a53
-      CPPFLAGS += -DUSE_RENDER_THREAD
+      USE_RENDER_THREAD ?= 1
     endif
 
 # Rockchip RK3288 e.g. Asus Tinker Board / RK3328 e.g. PINE64 Rock64 / RK3399 e.g. PINE64 RockPro64 - 32-bit userspace
@@ -145,17 +149,18 @@ else ifneq (,$(findstring RK,$(PLATFORM)))
         CPUFLAGS += -mcpu=cortex-a72
       else ifneq (,$(findstring RK3328,$(PLATFORM)))
         CPUFLAGS += -mcpu=cortex-a53
-        CPPFLAGS += -DUSE_RENDER_THREAD
+        USE_RENDER_THREAD ?= 1
       endif
     else ifneq (,$(findstring RK3288,$(PLATFORM)))
       CPUFLAGS += -mcpu=cortex-a17 -mfloat-abi=hard -mfpu=neon-vfpv4
-      CPPFLAGS += -DUSE_RENDER_THREAD
+      USE_RENDER_THREAD ?= 1
     endif
 
 # sun8i Allwinner H2+ / H3 like Orange PI, Nano PI, Banana PI, Tritium, AlphaCore2, MPCORE-HUB
 else ifeq ($(PLATFORM),sun8i)
     CPUFLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4
-    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR -DUSE_RENDER_THREAD
+    CPPFLAGS += -DARMV6_ASSEMBLY -D_FILE_OFFSET_BITS=64 -DARMV6T2 -DUSE_ARMNEON -DARM_HAS_DIV -DSOFTWARE_CURSOR
+    USE_RENDER_THREAD ?= 1
     HAVE_NEON = 1
     ifdef DEBUG
 	    # Otherwise we'll get compilation errors, check https://tls.mbed.org/kb/development/arm-thumb-error-r7-cannot-be-used-in-asm-here
@@ -195,6 +200,13 @@ export SDL_LDFLAGS := $(shell sdl2-config --libs)
 
 CPPFLAGS += $(SDL_CFLAGS) -Iexternal/libguisan/include
 LDFLAGS += $(SDL_LDFLAGS) -lSDL2_image -lSDL2_ttf -lguisan -Lexternal/libguisan/lib
+
+# Render thread option.
+# Set USE_RENDER_THREAD to (something like) yes, true or 1 to enable.
+# Setting it to anything else or leaving empty disables.
+ifneq ($(filter y% Y% t% T% 1, $(USE_RENDER_THREAD)),)
+    CPPFLAGS += -DUSE_RENDER_THREAD
+endif
 
 #
 # Common options
